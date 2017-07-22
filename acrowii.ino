@@ -8,10 +8,17 @@
 #define RC_PITCH_CHANNEL 2
 #define RC_YAW_CHANNEL 3
 
+// arduino uno rev 3
 #define RC_THROTTLE_PIN A0
 #define RC_ROLL_PIN A1
 #define RC_PITCH_PIN A2
 #define RC_YAW_PIN A3
+
+// flyduino nanowii
+//#define RC_THROTTLE_PIN D7
+//#define RC_ROLL_PIN D16
+//#define RC_PITCH_PIN D14
+//#define RC_YAW_PIN D15
 
 #define RC_EXPO 0.0
 
