@@ -1,3 +1,4 @@
+
 #include "PinChangeInterrupt.h"
 
 #define RC_NUM_CHANNELS 4
@@ -76,7 +77,7 @@ static void interruptRcYaw()
   timeInterrupt(&timer, &trigger, &rc_channel[RC_YAW_CHANNEL]);
 }
 
-static int timeInterrupt(unsigned long *timer, uint8_t *trigger, int *rc_channel)
+static int timeInterrupt(unsigned long *timer, uint8_t *trigger, volatile int *rc_channel)
 {
   if(*trigger == RISING)
   { 
