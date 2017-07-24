@@ -1,4 +1,4 @@
-
+#include "PID_v1.h"
 #include "PinChangeInterrupt.h"
 
 #define RC_NUM_CHANNELS 4
@@ -41,10 +41,17 @@
 #define PID_YAW_D 0.0
 #define PID_YAW_RATE 1.0
 
+// arduino uno rev 3
 #define ESC_OUTPUT_0_PIN 3
 #define ESC_OUTPUT_1_PIN 5
 #define ESC_OUTPUT_2_PIN 6
 #define ESC_OUTPUT_3_PIN 9
+
+// flyduino nanowii
+//#define ESC_OUTPUT_0_PIN D6
+//#define ESC_OUTPUT_1_PIN D10
+//#define ESC_OUTPUT_2_PIN D9
+//#define ESC_OUTPUT_3_PIN D5
 
 #define ESC_OUTPUT_MIN 1000
 #define ESC_OUTPUT_ARM 1100
@@ -127,12 +134,8 @@ static void doArmDisarm()
       esc[2] = ESC_OUTPUT_MIN;
       esc[3] = ESC_OUTPUT_MIN;
       armed = false;
-    }
-  }
-  else
-  {
-    if (time_start != 0)
       time_start = 0;
+    }
   }
 }
 
