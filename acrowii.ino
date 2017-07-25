@@ -57,7 +57,7 @@
 #define ESC_OUTPUT_ARM 1100
 #define ESC_OUTPUT_MAX 2000
 
-#define ESC_ARMING_DELAY 500000
+#define ESC_ARMING_DELAY 250000
 
 boolean armed = false;
 volatile int rc_channel[RC_NUM_CHANNELS];
@@ -117,7 +117,10 @@ static void doArmDisarm()
     unsigned long now = micros();
 
     if (now - time_start > ESC_ARMING_DELAY)
+    {
       armed = true;
+      time_start = 0;
+    }
   } 
   else if (rc_channel[RC_THROTTLE_CHANNEL] < 1050 && rc_channel[RC_YAW_CHANNEL] < 1050 && armed)
   {
@@ -136,6 +139,10 @@ static void doArmDisarm()
       armed = false;
       time_start = 0;
     }
+  }
+  else
+  {
+    time_start = 0;
   }
 }
 
