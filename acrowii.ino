@@ -1,3 +1,5 @@
+#include <Servo.h>
+
 #include "PID_v1.h"
 #include "PinChangeInterrupt.h"
 
@@ -61,7 +63,8 @@
 
 boolean armed = false;
 volatile int rc_channel[RC_NUM_CHANNELS];
-int esc[4];
+int esc_power[4];
+Servo esc[4];
 
 static void interruptRcThrottle()
 { 
@@ -132,10 +135,10 @@ static void doArmDisarm()
 
     if (now - time_start > ESC_ARMING_DELAY)
     {
-      esc[0] = ESC_OUTPUT_MIN;
-      esc[1] = ESC_OUTPUT_MIN;
-      esc[2] = ESC_OUTPUT_MIN;
-      esc[3] = ESC_OUTPUT_MIN;
+      esc_power[0] = ESC_OUTPUT_MIN;
+      esc_power[1] = ESC_OUTPUT_MIN;
+      esc_power[2] = ESC_OUTPUT_MIN;
+      esc_power[3] = ESC_OUTPUT_MIN;
       armed = false;
       time_start = 0;
     }
@@ -159,10 +162,18 @@ static void doThrottle()
     throttle = RC_HI;
   
   int throttle_output = map(throttle, RC_LOW, RC_HI, ESC_OUTPUT_ARM, ESC_OUTPUT_MAX);
-  esc[0] = throttle_output;
-  esc[1] = throttle_output;
-  esc[2] = throttle_output;
-  esc[3] = throttle_output;
+  esc_power[0] = throttle_output;
+  esc_power[1] = throttle_output;
+  esc_power[2] = throttle_output;
+  esc_power[3] = throttle_output;
+}
+
+static void doEngineOutput()
+{
+  esc[0].writeMicroseconds(esc_power[0]);
+  esc[1].writeMicroseconds(esc_power[1]);
+  esc[2].writeMicroseconds(esc_power[2]);
+  esc[3].writeMicroseconds(esc_power[3]);
 }
 
 static void printDebugInfo()
@@ -178,13 +189,14 @@ static void printDebugInfo()
   Serial.print(" armed: ");
   Serial.print(armed);
   Serial.print(" output: ");
-  Serial.print(esc[0]);
+  Serial.print(esc_power[0]);
   Serial.print(", ");
-  Serial.print(esc[1]);
+  Serial.print(esc_power[1]);
   Serial.print(", ");
-  Serial.print(esc[2]);
+  Serial.print(esc_power[2]);
   Serial.print(", ");
-  Serial.println(esc[3]);
+  Serial.print(esc_power[3]);
+  Serial.println();
 }
 
 void setup() 
@@ -199,10 +211,15 @@ void setup()
   attachPCINT(digitalPinToPCINT(RC_PITCH_PIN), interruptRcPitch, CHANGE);
   attachPCINT(digitalPinToPCINT(RC_YAW_PIN), interruptRcYaw, CHANGE);
 
-  esc[0] = ESC_OUTPUT_MIN;
-  esc[1] = ESC_OUTPUT_MIN;
-  esc[2] = ESC_OUTPUT_MIN;
-  esc[3] = ESC_OUTPUT_MIN;
+  esc_power[0] = ESC_OUTPUT_MIN;
+  esc_power[1] = ESC_OUTPUT_MIN;
+  esc_power[2] = ESC_OUTPUT_MIN;
+  esc_power[3] = ESC_OUTPUT_MIN;
+  
+  esc[0].attach(ESC_OUTPUT_0_PIN);
+  esc[1].attach(ESC_OUTPUT_1_PIN);
+  esc[2].attach(ESC_OUTPUT_2_PIN);
+  esc[3].attach(ESC_OUTPUT_3_PIN);
   
   Serial.begin(9600);
 }
@@ -210,9 +227,8 @@ void setup()
 void loop() 
 {
   doArmDisarm();
-
   doThrottle();
-  
+  doEngineOutput();
   printDebugInfo();
   delay(100);
 }
